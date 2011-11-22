@@ -10,11 +10,10 @@ class RestaurantController < ApplicationController
     latlong =  [ params[:lat].to_f, params[:long].to_f ]
     radius = params[:radius].to_f
     near = Restaurant.where(:location.within => { "$center" => [ latlong, radius ] }).
-    where(:price.lte => params[:price_high].to_i).
-    where(:price.gte => params[:price_low].to_i).
-    where(:stars.lte => params[:stars_high].to_i).
-    where(:stars.gte => params[:stars_low].to_i)
-    near= near.any_in(tags: tags.downcase.split(',')) if tags and tags.length > 0
+    where(:'sources.price'.lte => params[:price_high].to_i).
+    where(:'sources.price'.gte => params[:price_low].to_i).
+    where(:'sources.rating'.gte => params[:stars_min].to_i).limit(100)    
+    near= near.any_in(:'sources.tags' => tags.downcase.split(',')) if tags and tags.length > 0
     #near = Restaurant.where(:location => {"$near" => latlong, "$maxDistance" => radius})
     
     

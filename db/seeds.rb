@@ -10,7 +10,15 @@
 
 require "yaml"
 
-records = YAML::load(IO.read('db/seeds.yml'))
+records = YAML::load(IO.read('db/combined.yml'))
 
 Restaurant.delete_all
-records.each {|r| Restaurant.create(r) }
+records.each do |r|
+
+  Restaurant.create(r)
+  
+  # sources = r["sources"]
+  # r.delete "sources"
+  # rest = Restaurant.create(r)
+  # sources.each{ |s| rest.sources.create(s) }
+end

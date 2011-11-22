@@ -26,12 +26,12 @@ body { height: 100%; margin: 0px; padding: 0px }
     position:absolute;
     bottom:0;
     right:50%;
-    margin-right: -200px
+    margin-right: -150px
     
        
   }
 
-  	#tabs {  width:400px; } 
+  	#tabs {  width:300px; } 
 	.tabs-bottom { position: relative; } 
 	.tabs-bottom .ui-tabs-panel { min-height: 140px; max-height:600px;overflow: auto; } 
 	.tabs-bottom .ui-tabs-nav { position: absolute !important; left: 0; bottom: 0; right:0; padding: 0 0.2em 0.2em 0; } 
