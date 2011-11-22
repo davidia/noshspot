@@ -1,0 +1,11 @@
+!!! html
+%html
+  %head
+    %title Nosh Spot
+    = javascript_include_tag "http://maps.google.com/maps/api/js?sensor=false"
+    = stylesheet_link_tag    "application" 
+    = javascript_include_tag "application" 
+    = csrf_meta_tags 
+  %body
+    = yield
+
