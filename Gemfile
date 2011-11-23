@@ -17,7 +17,11 @@ end
 
 gem 'thin'
 gem 'execjs'
-#gem 'therubyracer'
+
+group :development do
+gem 'therubyracer'
+end
+
 gem 'jquery-rails'
 
 # To use ActiveModel has_secure_password
