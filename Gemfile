@@ -32,7 +32,7 @@ gem 'jquery-rails'
 # To use debugger
 # gem 'ruby-debug19', :require => 'ruby-debug'
 
-
+gem 'jquery-ui-themes'
 gem "haml"
 gem "mongoid"
 gem "bson_ext"
