@@ -18,9 +18,9 @@ end
 gem 'thin'
 gem 'execjs'
 
-group :development do
+#group :development do
 gem 'therubyracer'
-end
+#end
 
 gem 'jquery-rails'
 
