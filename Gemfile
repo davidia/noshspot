@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.1.2'
+gem 'rails', '3.1.3'
 
 # Bundle edge Rails instead:
 # gem 'rails',     :git => 'git://github.com/rails/rails.git'
@@ -40,3 +40,17 @@ gem 'jquery-ui-themes'
 gem "haml"
 gem "mongoid"
 gem "bson_ext"
+
+group :development do
+  gem 'rspec-rails'
+
+end
+
+group :test do
+  gem "factory_girl_rails"	
+  gem "cucumber-rails", "~> 1.2.0"
+  gem 'rspec-rails'
+  gem 'database_cleaner'
+  gem 'spork'
+  gem 'guard-spork'
+end

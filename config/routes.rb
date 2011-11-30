@@ -5,7 +5,7 @@ Noshspot::Application.routes.draw do
 
   root :to => "map_view#index"
 
-  match 'restaurants/near' => 'restaurant#near'
+  match 'restaurants/search' => 'restaurant#search'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

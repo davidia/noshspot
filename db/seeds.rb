@@ -7,18 +7,15 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 
+require File.expand_path('../defs', __FILE__)
 
 require "yaml"
+
 
 records = YAML::load(IO.read('db/combined.yml'))
 
 Restaurant.delete_all
-records.each do |r|
-
-  Restaurant.create(r)
-  
-  # sources = r["sources"]
-  # r.delete "sources"
-  # rest = Restaurant.create(r)
-  # sources.each{ |s| rest.sources.create(s) }
+records.each do |venue|
+  hash = venue.to_hash
+  Restaurant.create(hash)
 end

@@ -29,11 +29,11 @@ var openwindow
 function checkSearch(){
 	var go = false
 	if(circle.center != c){
-		c = circle.center
+		c = circle.getCenter()
 		go = true
 	}
 	if(circle.radius != radius){
-		radius = circle.radius
+		radius = circle.getRadius()
 		go = true
 		
 		$("#range").text(Math.round(radius)+'M');
@@ -74,7 +74,7 @@ function getInfoWindow(venue){
 
 //Fodar
 function doSearch(){
-	args = 'lat='+c.Pa+'&long='+c.Qa+'&radius='+(radius/1600.0/60.0)
+	args = 'search_area='+c.lat()+','+c.lng()+','+(radius/1600.0/60.0) + "'"
 	args = args + '&price_low=' + price_low
 	args = args + '&price_high=' + price_high
 	args = args + '&stars_min=' + stars_min
@@ -83,7 +83,7 @@ function doSearch(){
 
 	$("#list").empty() 
        
-    $.getJSON('restaurants/near.json',args,function(data) {	 	
+    $.getJSON('restaurants/search.json',args,function(data) {	 	
 
     	
     	for (i in markers) {
