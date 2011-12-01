@@ -5,7 +5,7 @@ class RestaurantController < ApplicationController
 
     tags = params[:tags]
    
-    results = Restaurant.limit(100)
+    results = Restaurant.limit(10000)
     wheres = []
 
     if search_area = params[:search_area]

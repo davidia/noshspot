@@ -1,100 +1,21 @@
 = @count
 
 #map_canvas
-#tab-container
-  .tabs-bottom#tabs
-    %ul
-      %li
-        %a{:href=>"#tabs-1"} &pound;
-      %li
-        %a{:href=>"#tabs-2"} &#9733;
-      %li
-        %a{:href=>"#tabs-3"}
-          = image_tag "globe.jpg", {height:24,width: 24}
-      %li
-        %a{:href=>"#tabs-4"} ?
-    #tabs-1
-      Price:
-      %span#price_min Budget
-      to 
-      %span#price_max Luxury      
-      .slider#slider-price
-    #tabs-2
-      Minimum Rating 
-      %span#rating 1
-      or better
-      .slider#slider-stars
-    #tabs-3
-      .tags
-        %ol#tagslist
-          %li.ui-widget-content.parent All cuisines
-          %li.ui-widget-content.parent African
-          %li.ui-widget-content Algerian
-          %li.ui-widget-content Egyptian
-          %li.ui-widget-content Eritrean
-          %li.ui-widget-content Ethiopian
-          %li.ui-widget-content Moroccan
-          %li.ui-widget-content Nigerian
-          %li.ui-widget-content North African
-          %li.ui-widget-content South African
-          %li.ui-widget-content.parent Asian
-          %li.ui-widget-content Afghan
-          %li.ui-widget-content Chinese
-          %li.ui-widget-content Indian
-          %li.ui-widget-content Japanese
-          %li.ui-widget-content Korean
-          %li.ui-widget-content Sri Lankan
-          %li.ui-widget-content.parent Australian &amp; New Zealand
-          %li.ui-widget-content.parent Creative contemporary
-          %li.ui-widget-content.parent Eastern European
-          %li.ui-widget-content Czech
-          %li.ui-widget-content Georgian
-          %li.ui-widget-content Hungarian
-          %li.ui-widget-content Polish
-          %li.ui-widget-content Russian
-          %li.ui-widget-content.parent European
-          %li.ui-widget-content Austrian
-          %li.ui-widget-content Belgian
-          %li.ui-widget-content British
-          %li.ui-widget-content French
-          %li.ui-widget-content German
-          %li.ui-widget-content Greek
-          %li.ui-widget-content Irish
-          %li.ui-widget-content Italian
-          %li.ui-widget-content Mediterranean
-          %li.ui-widget-content Modern European
-          %li.ui-widget-content Portuguese
-          %li.ui-widget-content Scandinavian
-          %li.ui-widget-content Spanish
-          %li.ui-widget-content.parent Fish &amp; seafood
-          %li.ui-widget-content.parent Global
-          %li.ui-widget-content.parent Haute cuisine
-          %li.ui-widget-content.parent Jewish
-          %li.ui-widget-content.parent Latin American &amp; Caribbean
-          %li.ui-widget-content Argentinian (modern)
-          %li.ui-widget-content Argentinian (traditional)
-          %li.ui-widget-content Brazilian
-          %li.ui-widget-content Caribbean
-          %li.ui-widget-content Cuban
-          %li.ui-widget-content Mexican
-          %li.ui-widget-content Pan-South American
-          %li.ui-widget-content Peruvian
-          %li.ui-widget-content.parent Middle Eastern
-          %li.ui-widget-content Egyptian
-          %li.ui-widget-content Iranian
-          %li.ui-widget-content Iraqi
-          %li.ui-widget-content Lebanese
-          %li.ui-widget-content Syrian
-          %li.ui-widget-content Turkish
-          %li.ui-widget-content.parent North American
-          %li.ui-widget-content Tex-Mex Organic
-          %li.ui-widget-content.parent South-East Asia
-          %li.ui-widget-content Burmese
-          %li.ui-widget-content Indonesian
-          %li.ui-widget-content Malaysian
-          %li.ui-widget-content Singaporean
-          %li.ui-widget-content Thai
-          %li.ui-widget-content Vietnamese
-          %li.ui-widget-content.parent Vegetarian
-    #tabs-4
-      D
+#controls
+  #range-control
+    Range
+    %span#range    
+    m
+    .slider#slider-range
+  #price
+    Price:
+    %span#price_min Budget
+    to 
+    %span#price_max Luxury      
+    .slider#slider-price
+  #rat
+    Minimum Rating 
+    %span#rating 1
+    or better
+    .slider#slider-stars
+  #tags
