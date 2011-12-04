@@ -17,7 +17,7 @@ describe RestaurantController do
   describe "#search" do
     it "should fetch records in a search_area" do
       latlong = [51.5,-0.1]
-      radius = 0.01
+      radius = 800.0/1600/60
       
       criteria = FakeCriteria.new
       
@@ -25,9 +25,10 @@ describe RestaurantController do
           with(:location.within => { "$center" => [ latlong, radius ] }).
           and_return([FakeRest.new])
 
-      Restaurant.should_receive(:limit).with(100).and_return(criteria)      
+      Restaurant.should_receive(:limit).with(10000).and_return(criteria)      
                         
-      get 'search', {format: 'json', search_area: '51.5,-0.1,0.01'}      
+      post 'search', {format: 'json', request: '{area: {center:[51.5,-0.1], radius: 800}}'}
+      p response.body
       json = ActiveSupport::JSON::decode(response.body)
       json.should satisfy {|r| r[0]['name']=='fake'}
     end

@@ -1,21 +1,19 @@
-= @count
 
-#map_canvas
 #controls
-  #range-control
-    Range
-    %span#range    
-    m
+  .control#range-control
+    Distance:
+    %span#range        
     .slider#slider-range
-  #price
+  .control#price
     Price:
     %span#price_min Budget
     to 
     %span#price_max Luxury      
     .slider#slider-price
-  #rat
-    Minimum Rating 
-    %span#rating 1
-    or better
+  .control#rat
+    Rating:
+    %span#rating
     .slider#slider-stars
-  #tags
+  .control#tags
+#map_canvas
+  .alert-message#msg

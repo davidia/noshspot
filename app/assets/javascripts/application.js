@@ -7,13 +7,14 @@
 //= require jquery
 //= require jquery-ui
 //= require jquery_ujs
+
 //= require_tree .
 
 var map;
-var center = new google.maps.LatLng(51.518, -.135);
+var center = new google.maps.LatLng(51.513, -.124);
 
-var c = center
-var radius = 800
+var radius = 300
+
 
 var circle
 var markers = [];
@@ -26,43 +27,38 @@ var stars_min = 1
 
 var openwindow
 
-function checkSearch(){
-	var go = false
-	if(circle.center != c){
-		c = circle.getCenter()
-		go = true
-	}
-	if(circle.radius != radius){
-		radius = circle.getRadius()
-		go = true
-		
-		$("#range").text(Math.round(radius)+'M');
-	}
-	if(go){
-		doSearch()
-	}
-}
-
 
 function addSource(source){
 
-	str =  '<div class="site"><a href="'+source.url+'" target = "_blank">'+ source.name + '</a><br>'
+	str =  '<tr><td><a href="'+source.url+'" target = "_blank">'+ source.name + '</a>'
 	
-	if(source.name=='TimeOut'){
-		if(source.rating){ str += '<div class="stars s'+source.rating+'"></div>'}
+	str += '<td>'
+	if(source.normalised_rating){
+	str += '<div class="rating-view">'
+				+'<div class="stars"></div>'
+				+'<div class="stars-fill" style="width:'+Math.floor(16*source.normalised_rating)+'px"></div>'+
+		  +'</div>'
 	}
-	if(source.name=='London-Eating'){
-		if(source.rating){
-			str += '<div class="lescore">'
-			str += '<div class="leinner" style="width:'+Math.floor(8*source.rating)+'px">'
-			str += '</div></div>'
-		}
-		source.rating
-	}
+
+	//
+	
+	// if(source.name=='TimeOut'){
+	// 	if(source.rating){ str += '<div class="stars s'+source.rating+'"></div>'}
+	// }
+	// if(source.name=='London-Eating'){
+		
+	// 	if(source.rating){
+	// 		str += '<div class="lescore">'
+	// 		str += '<div class="leinner" style="width:'+Math.floor(8*source.rating)+'px">'
+	// 		str += '</div></div>'
+	// 	}
+	// 	source.rating
+	// }
 	
 
-	if(source.price){  str += ' ' + source.price}
-	str += '</div>'
+	if(source.price){  str += '<td>' + source.price}
+	
+
 	return str
 }
 
@@ -70,19 +66,21 @@ function getInfoWindow(venue){
 	
 	content = '<div class="card">'
 	content += '<h3>' + venue.name  + '</h3>'
-	content += '<div class="col1">'
+	content += '<table><tr><th><th>Rating<th>Price'
 
 	for(i in venue.sites){
 		content = content + addSource(venue.sites[i])
 	}
 
 	
-	content += '</div>'
-	content += '<div class="col2">'
+	content += '</table>'
+	content += '<div >'
 	content += venue.street_address + '</br>' 
 	content += venue.postcode + '</br>' 
 	if(venue.telephone){	
-		content += venue.telephone
+		content += venue.telephone.slice(0,3) + ' ' +
+				   venue.telephone.slice(3,7) + ' ' +
+				   venue.telephone.slice(7,11)
 	}
 		
 	content += '</div>'
@@ -96,6 +94,23 @@ function getInfoWindow(venue){
 
 excluded=[]
 exclusive=[]
+
+function reviewMarkers(){
+	if(exclusive.length > 0){
+		for(i in markers){
+			marker=markers[i]
+			show = exclusive.indexOf(marker.cuisine) != -1
+			marker.setVisible(show)			
+		}
+	} else if(excluded.length > 0){
+		for(i in markers){
+			marker=markers[i]
+			show = excluded.indexOf(marker.cuisine) == -1
+			marker.setVisible(show)			
+		}
+	}
+
+}
 
 function addTag(tag,count){
 	id = tag.split(' ').join('')
@@ -112,6 +127,7 @@ function addTag(tag,count){
   			excluded.push(tag)  		
   			$(this).parents('.tag').addClass('excluded')
   		}
+  		reviewMarkers()
 	});
 
 	$('#'+id+' img.tick').bind('click', function() {
@@ -122,32 +138,44 @@ function addTag(tag,count){
   			exclusive.push(tag)  		
   			$(this).parents('.tag').addClass('exclusive')
   		}
+  		reviewMarkers()
 	});
 }
 
+function hideMsg() {
+	setTimeout(function() {
+		$( "#msg" ).hide( 'slide', {direction: 'up'}, 500 );    		
+	}, 2000 );
+};
+
 //Fodar
 function doSearch(){
-	args = 'search_area='+c.lat()+','+c.lng()+','+(radius/1600.0/60.0) + "'"
-	
-	if(price_low > 1) {
-		args = args + '&price_low=' + price_low
-	}
 
-	if(price_high < 5) {
-		args = args + '&price_high=' + price_high
+	search_data = {geo:{}}
+
+	latLng = circle.getCenter()	
+	search_data['geo']['center']=[latLng.lat(),latLng.lng()]
+	search_data['geo']['radius']=circle.getRadius()
+
+	if(price_low > 1 || price_high < 4) {
+		search_data['price']={}
+		search_data['price']['low']=price_low
+		search_data['price']['high']=price_high
 	}
 
 	if(stars_min > 1) {
-		args = args + '&stars_min=' + stars_min
+		search_data['rating_min']=stars_min
 	}
-		
-	//args = args + '&tags=' + tags
-
-	$("#list").empty() 
        
-    $.getJSON('restaurants/search.json',args,function(data) {	 	
+    $.getJSON('restaurants/search.json',search_data,function(response) {	 	
 
+    	data=response.data
 
+    	if(response.msg){
+    		$( "#msg" ).empty()
+    		$( "#msg" ).append(response.msg)
+    		$( "#msg" ).show( 'slide', {direction: 'up'}, 500, hideMsg );    		
+    	}
     	
     	for (i in markers) {
       		markers[i].setMap(null);
@@ -156,14 +184,9 @@ function doSearch(){
     	tags_obj = {}
     	tags=[]
 
-    	//ids = []
-    	//for (i in markers) {
-      	//	ids.push 
-    	//}
-
     	$.each(data, function(index, venue) {
     		
-
+    		tag = 'Unknown'
     		for(j in venue.sites){
     			site = venue.sites[j]
     			if (site.name == "London-Eating"){
@@ -178,9 +201,6 @@ function doSearch(){
     			}    			
     		}
 
-    	
-    	
-    	
   		var myLatlng = new google.maps.LatLng(venue.location[0],venue.location[1]);
 		var marker = new google.maps.Marker({
 		position: myLatlng,
@@ -188,6 +208,7 @@ function doSearch(){
 		title:venue.name,
 		 });
 		marker.data = venue
+		marker.cuisine = tag
 
 
 		google.maps.event.addListener(marker, 'click', function() {
@@ -208,17 +229,6 @@ function doSearch(){
 			}
  			
 		});
-
-		// google.maps.event.addListener(marker, 'mouseout', function() {
-		// 	if(openwindow){
-		// 		openwindow.close()
-		// 	}
-		// 	//openwindow = getInfoWindow(venue)
- 	// 		//openwindow.open(map,marker);
-		// });
-
-
-		//$("#list").append('<li>'+venue.name+'</li>')
 
 		markers.push(marker)
 		});
@@ -241,7 +251,7 @@ var prices = ['Budget','Mid-Range','Expensive','Luxury']
 $(document).ready(function() {
   
     var myOptions = {
-      zoom: 13,
+      zoom: 16,
       center: center,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
       disableDefaultUI: true,
@@ -260,6 +270,7 @@ $(document).ready(function() {
     });
 
 
+
 var search_area = {
       strokeColor: "#FF0000",
       strokeOpacity: 0.8,
@@ -275,31 +286,45 @@ var search_area = {
       strokeColor:'#2EFE2E'
     };
     circle = new google.maps.Circle(search_area);
-
+    displayRange()
     
 
 google.maps.event.addListener(circle, 'center_changed', function() {
-	checkSearch();
+	scheduleSearch()
 });
 
-google.maps.event.addListener(circle, 'radius_changed', function() {
-	checkSearch();
-});
+var timerid;
+// google.maps.event.addListener(circle, 'radius_changed', function() {
+//  	displayRange()
+ 	
+// });
 
+function displayRange(range){
+	$("#range").empty()
+	$("#range").append(circle.getRadius()+'M')
+}
+
+function displayRating(min_stars){
+	$("#rating").empty()
+	$("#rating").append(min_stars + ' +')
+}
+
+function scheduleSearch(){
+	clearTimeout(timerid)
+	timerid = setTimeout("doSearch()",300);	
+}
 
 $(function() {
 		$( "#slider-range" ).slider({
 			
 			min: 100,
-			max: 2000,
+			max: 1000,
 			step: 10,
 			value:  300 ,
-			slide: function( event, ui ) {
-				
-				circle.setRadius(ui.value)	
-				$("#rating").empty()
-				$("#rating").append(ui.value)			
-				//doSearch()				
+			slide: function( event, ui ) {						
+				circle.setRadius(ui.value)					
+				displayRange()
+				scheduleSearch()
 			}
 		});
 });
@@ -320,7 +345,7 @@ $(function() {
 
 				$("#price_max").empty()
 				$("#price_max").append(prices[price_high-1])
-				doSearch()				
+				scheduleSearch()
 			}
 		});
 	});
@@ -329,16 +354,16 @@ $(function() {
 	
 
 $(function() {
-		$( "#slider-stars" ).slider({
-			
+		start_stars=1
+	    displayRating(start_stars)
+		$( "#slider-stars" ).slider({		
 			min: 1,
 			max: 5,
-			value:  1 ,
+			value:  start_stars ,
 			slide: function( event, ui ) {
-				stars_min = ui.value				
-				$("#rating").empty()
-				$("#rating").append(stars_min)
-				doSearch()				
+				stars_min = ui.value
+				displayRating(stars_min)				
+				scheduleSearch()
 			}
 		});
 	});
@@ -360,5 +385,4 @@ $(function() {
 	doSearch()
 
 });
-
 

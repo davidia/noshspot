@@ -1,34 +1,43 @@
 class RestaurantController < ApplicationController
+
+  def extract_geo_params geo_params
+    lat_lng  = geo_params["center"].map{|c|c.to_f}
+    
+    # cap search at 1000M and convert degrees latitude
+    # E/W will be slightly squiffy due to spherical nature of earth
+    radius = geo_params["radius"].to_f
+    max_dist = [radius,1000.0].min/1852/60
+
+    [lat_lng,max_dist]
+  end
+
   def search
      
-    
+    lat_lng, max_dist = extract_geo_params params[:geo]      
 
-    tags = params[:tags]
-   
-    results = Restaurant.limit(10000)
-    wheres = []
-
-    if search_area = params[:search_area]
-      lat,long,radius = search_area.split(',').map {|a| a.to_f}      
-      results = results.where(:location.within => { "$center" => [ [lat,long], radius ] })
-    end
-    
-    # if ph = params[:price_high]  
-    #   results = results.where(:'sources.normalised_price'.lte => ph.to_i)
-    # end
-
-    # if(pl = params[:price_low])
-    #   results = results.where(:'sources.normalised_price'.gte => pl.to_i)
-    # end
+    #DB has default limit of 100 for near
+    results = Restaurant.where(
+      :location => {"$near" => lat_lng ,"$maxDistance" => max_dist }
+    ) 
         
-    #where(:'sources.rating'.gte => params[:stars_min].to_i).limit(100)    
-    #near= near.any_in(:'sources.tags' => tags.downcase.split(',')) if tags and tags.length > 0
-    #near = Restaurant.where(:location => {"$near" => latlong, "$maxDistance" => radius})
-    
+    if params.has_key? "price"
+      pp = params["price"]
+      results = results.where(:'sites.normalised_price'.lte => pp["high"].to_i)      
+      results = results.where(:'sites.normalised_price'.gte => pp["low"].to_i)      
+    end
+
+    if params.has_key? "rating_min"
+      results = results.where(:'sites.normalised_rating'.gte => params["rating_min"].to_i)            
+    end
+
+    response = {data:results}
+
+    #warn user if results capped
+    response['msg'] = 'Capped at 100 restaurants' if (results.length == 100)
+
     respond_to do |format|
-      #format.html # index.html.erb
-      #format.xml  { render :xml => results}
-      format.json { render :json => results}
+      format.html # index.html.erb    
+      format.json { render :json => response}
     end    
   end
 end
